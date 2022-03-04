@@ -8,13 +8,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MissileLauncherTest {
     @Test
     void givenGoodLaunchCodes_MissileIsLaunched() {
-        // arrange
         MissileSpy missileSpy = new MissileSpy();
 
-        // act
         launchMissile(missileSpy, new GoodLaunchCodeStub());
 
-        // assert
         assertThat(missileSpy.launchWasCalled()).isTrue();
     }
 
@@ -24,14 +21,40 @@ class MissileLauncherTest {
     }
 
     @Test
-    void givenExpiredLaunchCodes_MissileIsNotLaunched_Spy() {
-        // arrange
+    void givenExpiredLaunchCodes_MissileIsNotLaunchedAndDisabled_Spy() {
         MissileSpy missileSpy = new MissileSpy();
 
-        // act
         launchMissile(missileSpy, new ExpiredLaunchCodeStub());
 
-        // assert
         assertThat(missileSpy.launchWasCalled()).isFalse();
+        assertThat(missileSpy.disableWasCalled()).isTrue();
+    }
+
+    @Test
+    void givenUnsignedLaunchCodes_MissileIsNotLaunchedAndDisabled_Spy() {
+        MissileSpy missileSpy = new MissileSpy();
+
+        launchMissile(missileSpy, new UnsignedLaunchCodeStub());
+
+        assertThat(missileSpy.launchWasCalled()).isFalse();
+        assertThat(missileSpy.disableWasCalled()).isTrue();
+    }
+
+    @Test
+    void givenExpiredLaunchCodes_CodeRedAbort_Mock() {
+        MissileMock missileMock = new MissileMock();
+
+        launchMissile(missileMock, new ExpiredLaunchCodeStub());
+
+        missileMock.verifyCodeRedAbort();
+    }
+
+    @Test
+    void givenUnsignedLaunchCodes_CodeRedAbort_Mock() {
+        MissileMock missileMock = new MissileMock();
+
+        launchMissile(missileMock, new UnsignedLaunchCodeStub());
+
+        missileMock.verifyCodeRedAbort();
     }
 }
